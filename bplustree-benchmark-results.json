@@ -1,0 +1,290 @@
+[
+  {
+    "config": {
+      "branchingFactor": 10,
+      "documentSize": 100,
+      "documentSizeLabel": "Small",
+      "numDocuments": 1000,
+      "testName": "Small Docs (100B) @ Order 10"
+    },
+    "insertTime": 265.87487799999997,
+    "searchTime": 628.867816,
+    "rangeSearchTime": 4253.849946,
+    "deleteTime": 54.192102999999406,
+    "treeHeight": 3,
+    "fileSize": 2061382,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 20,
+      "documentSize": 100,
+      "documentSizeLabel": "Small",
+      "numDocuments": 1000,
+      "testName": "Small Docs (100B) @ Order 20"
+    },
+    "insertTime": 228.83898799999952,
+    "searchTime": 386.8244990000003,
+    "rangeSearchTime": 2071.5128050000003,
+    "deleteTime": 38.16800499999954,
+    "treeHeight": 2,
+    "fileSize": 2908930,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 50,
+      "documentSize": 100,
+      "documentSizeLabel": "Small",
+      "numDocuments": 1000,
+      "testName": "Small Docs (100B) @ Order 50"
+    },
+    "insertTime": 277.44805499999893,
+    "searchTime": 381.78355999999985,
+    "rangeSearchTime": 1672.5100199999997,
+    "deleteTime": 57.39207300000089,
+    "treeHeight": 1,
+    "fileSize": 5615565,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 100,
+      "documentSize": 100,
+      "documentSizeLabel": "Small",
+      "numDocuments": 1000,
+      "testName": "Small Docs (100B) @ Order 100"
+    },
+    "insertTime": 392.2574330000007,
+    "searchTime": 707.1001120000001,
+    "rangeSearchTime": 1374.5241159999987,
+    "deleteTime": 45.92923300000075,
+    "treeHeight": 1,
+    "fileSize": 9720736,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 200,
+      "documentSize": 100,
+      "documentSizeLabel": "Small",
+      "numDocuments": 1000,
+      "testName": "Small Docs (100B) @ Order 200"
+    },
+    "insertTime": 626.1280110000007,
+    "searchTime": 1102.641501,
+    "rangeSearchTime": 1141.5852920000016,
+    "deleteTime": 59.34554399999979,
+    "treeHeight": 1,
+    "fileSize": 17972394,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 500,
+      "documentSize": 100,
+      "documentSizeLabel": "Small",
+      "numDocuments": 1000,
+      "testName": "Small Docs (100B) @ Order 500"
+    },
+    "insertTime": 1269.7839489999988,
+    "searchTime": 1632.7014210000016,
+    "rangeSearchTime": 570.9830540000003,
+    "deleteTime": 99.56105699999898,
+    "treeHeight": 1,
+    "fileSize": 39641092,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 10,
+      "documentSize": 1000,
+      "documentSizeLabel": "Medium",
+      "numDocuments": 1000,
+      "testName": "Medium Docs (1000B) @ Order 10"
+    },
+    "insertTime": 216.20771899999818,
+    "searchTime": 1609.9008360000007,
+    "rangeSearchTime": 14514.039982000002,
+    "deleteTime": 117.18333600000187,
+    "treeHeight": 3,
+    "fileSize": 9576964,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 20,
+      "documentSize": 1000,
+      "documentSizeLabel": "Medium",
+      "numDocuments": 1000,
+      "testName": "Medium Docs (1000B) @ Order 20"
+    },
+    "insertTime": 227.95033400000102,
+    "searchTime": 2091.2584360000037,
+    "rangeSearchTime": 11887.605889999999,
+    "deleteTime": 110.98625500000344,
+    "treeHeight": 2,
+    "fileSize": 17513698,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 50,
+      "documentSize": 1000,
+      "documentSizeLabel": "Medium",
+      "numDocuments": 1000,
+      "testName": "Medium Docs (1000B) @ Order 50"
+    },
+    "insertTime": 321.8916180000015,
+    "searchTime": 3154.8871230000004,
+    "rangeSearchTime": 11227.190098,
+    "deleteTime": 168.04667700000573,
+    "treeHeight": 1,
+    "fileSize": 41223537,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 100,
+      "documentSize": 1000,
+      "documentSizeLabel": "Medium",
+      "numDocuments": 1000,
+      "testName": "Medium Docs (1000B) @ Order 100"
+    },
+    "insertTime": 506.2367149999918,
+    "searchTime": 5751.726800999997,
+    "rangeSearchTime": 11989.790663000007,
+    "deleteTime": 184.19143299999996,
+    "treeHeight": 1,
+    "fileSize": 79271056,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 200,
+      "documentSize": 1000,
+      "documentSizeLabel": "Medium",
+      "numDocuments": 1000,
+      "testName": "Medium Docs (1000B) @ Order 200"
+    },
+    "insertTime": 821.6001319999923,
+    "searchTime": 9553.257125999997,
+    "rangeSearchTime": 9665.566445999997,
+    "deleteTime": 169.88426099999924,
+    "treeHeight": 1,
+    "fileSize": 152278324,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 500,
+      "documentSize": 1000,
+      "documentSizeLabel": "Medium",
+      "numDocuments": 1000,
+      "testName": "Medium Docs (1000B) @ Order 500"
+    },
+    "insertTime": 1709.8398589999997,
+    "searchTime": 12173.649101999996,
+    "rangeSearchTime": 4754.278544000001,
+    "deleteTime": 187.24028500000713,
+    "treeHeight": 1,
+    "fileSize": 341600814,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 10,
+      "documentSize": 10000,
+      "documentSizeLabel": "Large",
+      "numDocuments": 1000,
+      "testName": "Large Docs (10000B) @ Order 10"
+    },
+    "insertTime": 335.0471439999965,
+    "searchTime": 18080.084942,
+    "rangeSearchTime": 165392.30613200003,
+    "deleteTime": 955.2296590000042,
+    "treeHeight": 3,
+    "fileSize": 84637800,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 20,
+      "documentSize": 10000,
+      "documentSizeLabel": "Large",
+      "numDocuments": 1000,
+      "testName": "Large Docs (10000B) @ Order 20"
+    },
+    "insertTime": 445.5366220000433,
+    "searchTime": 21758.275193999987,
+    "rangeSearchTime": 139182.588084,
+    "deleteTime": 1047.068275000027,
+    "treeHeight": 2,
+    "fileSize": 163526927,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 50,
+      "documentSize": 10000,
+      "documentSizeLabel": "Large",
+      "numDocuments": 1000,
+      "testName": "Large Docs (10000B) @ Order 50"
+    },
+    "insertTime": 773.6216150000109,
+    "searchTime": 31641.046447,
+    "rangeSearchTime": 122657.77859700006,
+    "deleteTime": 1207.2407699999167,
+    "treeHeight": 1,
+    "fileSize": 398202461,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 100,
+      "documentSize": 10000,
+      "documentSizeLabel": "Large",
+      "numDocuments": 1000,
+      "testName": "Large Docs (10000B) @ Order 100"
+    },
+    "insertTime": 1373.0853709999938,
+    "searchTime": 51411.724147,
+    "rangeSearchTime": 101662.97029700002,
+    "deleteTime": 1225.9493849999271,
+    "treeHeight": 1,
+    "fileSize": 775443750,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 200,
+      "documentSize": 10000,
+      "documentSizeLabel": "Large",
+      "numDocuments": 1000,
+      "testName": "Large Docs (10000B) @ Order 200"
+    },
+    "insertTime": 2457.971264999942,
+    "searchTime": 83187.16021900007,
+    "rangeSearchTime": 83087.914322,
+    "deleteTime": 1139.30437300005,
+    "treeHeight": 1,
+    "fileSize": 1495969936,
+    "error": null
+  },
+  {
+    "config": {
+      "branchingFactor": 500,
+      "documentSize": 10000,
+      "documentSizeLabel": "Large",
+      "numDocuments": 1000,
+      "testName": "Large Docs (10000B) @ Order 500"
+    },
+    "insertTime": 5434.066318999976,
+    "searchTime": 254422.70621400012,
+    "rangeSearchTime": 98531.49872899987,
+    "deleteTime": 1525.3646060000174,
+    "treeHeight": 1,
+    "fileSize": 3368350749,
+    "error": null
+  }
+]
