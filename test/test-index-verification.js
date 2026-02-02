@@ -162,7 +162,7 @@ describe('Index Verification Tests', function() {
 			await db[collectionName].createIndex({ name: -1 }, { name: 'name_desc' });
 			
 			// Get indexes
-			const indexes = db[collectionName].getIndexes();
+			const indexes = await db[collectionName].getIndexes();
 			
 			expect(indexes).to.have.lengthOf(2);
 			expect(indexes[0].name).to.equal('age_1');

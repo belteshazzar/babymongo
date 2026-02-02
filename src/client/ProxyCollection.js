@@ -11,7 +11,6 @@ export class ProxyCollection {
     this.name = name;
     this.bridge = bridge;
     this._db = db; // Reference to ProxyDB for registering new collections
-    this.indexes = []; // Track indexes locally
 
     return new Proxy(this, {
       get: (target, prop, receiver) => {
@@ -106,43 +105,15 @@ export class ProxyCollection {
           this._db.collection(args[0]);
         }
       }
-      // If createIndex, cache the index info
-      if (method === 'createIndex') {
-        const indexSpec = args[0];
-        const indexOptions = args[1] || {};
-        const indexName = indexOptions.name || Object.entries(indexSpec)
-          .map(([k, v]) => `${k}_${v}`)
-          .join('_');
-        
-        // Only add if not already present
-        if (!this.indexes.find(idx => idx.name === indexName)) {
-          this.indexes.push({
-            name: indexName,
-            key: indexSpec,
-            ...indexOptions
-          });
-        }
-      }
-      // If dropIndex or dropIndexes, update cache
-      if (method === 'dropIndex') {
-        const indexName = args[0];
-        this.indexes = this.indexes.filter(idx => idx.name !== indexName);
-      }
-      if (method === 'dropIndexes') {
-        this.indexes = [];
-      }
-      // If drop (collection), clear all cached indexes
-      if (method === 'drop') {
-        this.indexes = [];
-      }
       return res;
     });
     return promise;
   }
 
   getIndexes() {
-    // Return cached indexes synchronously
-    return this.indexes;
+    // Forward to worker instead of using per-instance cache
+    // This enables proper multi-client synchronization
+    return this._call('getIndexes', []);
   }
 
   _watch(pipeline = [], options = {}) {

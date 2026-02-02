@@ -38,30 +38,30 @@ describe("DB no options", function() {
 	afterEach(setup.afterEach);
 
 	it('should have no collections by default', async function() {			
-		expect(db.getCollectionNames().length).to.equal(0);
+		expect((await db.getCollectionNames()).length).to.equal(0);
 	});
 
 	it('should be able to create a collection with default store', async function() {			
 		db.createCollection("myCollection");
-		expect(db.getCollectionNames().length).to.equal(1);
+		expect((await db.getCollectionNames()).length).to.equal(1);
 		expect(db.myCollection).to.not.be.undefined;
 	});
 
 	it('should be able to create a collection with the provided store', async function() {			
 		db.createCollection("myCollection");
-		expect(db.getCollectionNames().length).to.equal(1);
+		expect((await db.getCollectionNames()).length).to.equal(1);
 		expect(db.myCollection).to.not.be.undefined;
 	});
 
 	it('should be able to drop collection', async function() {			
 		db.createCollection("myCollection");
-		expect(db.getCollectionNames().length).to.equal(1);
+		expect((await db.getCollectionNames()).length).to.equal(1);
 		expect(db.myCollection).to.not.be.undefined;
 		await db.dropDatabase();
-		expect(db.getCollectionNames().length).to.equal(0);
+		expect((await db.getCollectionNames()).length).to.equal(0);
 		// After dropping, accessing the collection will auto-create it (like real MongoDB)
 		// So we check getCollectionNames() to verify it's truly gone
-		expect(db.getCollectionNames()).to.not.include('myCollection');
+		expect(await db.getCollectionNames()).to.not.include('myCollection');
 	});
 });
 
@@ -77,40 +77,44 @@ describe("DB", function() {
 	afterEach(setup.afterEach);
 
 	it('should have no collections by default', async function() {			
-		expect(db.getCollectionNames().length).to.equal(0);
+		expect((await db.getCollectionNames()).length).to.equal(0);
 	});
 
 	it('should be able to create a collection with default store', async function() {			
 		db.createCollection("myCollection");
-		expect(db.getCollectionNames().length).to.equal(1);
+		expect((await db.getCollectionNames()).length).to.equal(1);
 		expect(db.myCollection).to.not.be.undefined;
 	});
 
 	it('should be able to create a collection with the provided store', async function() {			
 		db.createCollection("myCollection");
-		expect(db.getCollectionNames().length).to.equal(1);
+		expect((await db.getCollectionNames()).length).to.equal(1);
 		expect(db.myCollection).to.not.be.undefined;
 	});
 
 	it('should be able to drop collection', async function() {			
 		db.createCollection("myCollection");
-		expect(db.getCollectionNames().length).to.equal(1);
+		expect((await db.getCollectionNames()).length).to.equal(1);
 		expect(db.myCollection).to.not.be.undefined;
 		await db.dropDatabase();
-		expect(db.getCollectionNames().length).to.equal(0);
+		expect((await db.getCollectionNames()).length).to.equal(0);
 		// After dropping, accessing the collection will auto-create it (like real MongoDB)
 		// So we check getCollectionNames() to verify it's truly gone
-		expect(db.getCollectionNames()).to.not.include('myCollection');
+		expect(await db.getCollectionNames()).to.not.include('myCollection');
 	});
 
 	describe('Dynamic Collection Creation (Proxy)', function() {
 		
 		it('should auto-create collection when accessing non-existent collection', async function() {
-			expect(db.getCollectionNames().length).to.equal(0);
+			expect((await db.getCollectionNames()).length).to.equal(0);
 			const col = db.dynamicCollection;
 			expect(col).to.not.be.undefined;
-			expect(db.getCollectionNames().length).to.equal(1);
-			expect(db.getCollectionNames()).to.include('dynamicCollection');
+				// Access alone should not persist the collection
+				expect((await db.getCollectionNames()).length).to.equal(0);
+				// Persist by performing an operation
+				await db.dynamicCollection.insertOne({ created: true });
+				expect((await db.getCollectionNames()).length).to.equal(1);
+				expect(await db.getCollectionNames()).to.include('dynamicCollection');
 		});
 
 		it('should allow inserting into dynamically created collection', async function() {
@@ -134,13 +138,16 @@ describe("DB", function() {
 		it('should return same collection instance on repeated access', async function() {
 			const col1 = db.testCollection;
 			const col2 = db.testCollection;
-			expect(col1).to.equal(col2);
+				expect(col1).to.not.equal(col2);
+				await col1.insertOne({ name: 'shared' });
+				const found = await col2.findOne({ name: 'shared' });
+				expect(found).to.not.be.null;
 		});
 
 		it('should not create collection for internal properties', async function() {
 			const options = db.options;
 			expect(options).to.not.be.undefined;
-			expect(db.getCollectionNames()).to.not.include('options');
+			expect(await db.getCollectionNames()).to.not.include('options');
 		});
 
 		it('should work with multiple dynamically created collections', async function() {
@@ -148,7 +155,11 @@ describe("DB", function() {
 			await db.collection2.insertOne({ value: 2 });
 			await db.collection3.insertOne({ value: 3 });
 			
-			expect(db.getCollectionNames().length).to.equal(3);
+				const collectionNames = await db.getCollectionNames();
+				expect(collectionNames.length).to.be.at.least(3);
+				expect(collectionNames).to.include('collection1');
+				expect(collectionNames).to.include('collection2');
+				expect(collectionNames).to.include('collection3');
 			expect((await db.collection1.findOne()).value).to.equal(1);
 			expect((await db.collection2.findOne()).value).to.equal(2);
 			expect((await db.collection3.findOne()).value).to.equal(3);
@@ -347,9 +358,9 @@ describe("DB", function() {
 		});
 
 		it('should testCopyTo', async function() {
-			if (db.getCollectionNames().includes(collectionName2)) throw "backup collection shouldn't exist";
+			if ((await db.getCollectionNames()).includes(collectionName2)) throw "backup collection shouldn't exist";
 			if (await db[collectionName].copyTo(collectionName2) != 6) throw "should have copied all 6 docs";
-			if (!db.getCollectionNames().includes(collectionName2)) throw "backup collection should have been created";
+			if (!(await db.getCollectionNames()).includes(collectionName2)) throw "backup collection should have been created";
 			if (await db[collectionName2].find().count() != 6) throw "failed to copy all content";
 			if (await db[collectionName].find().count() != 6) throw "original collection should still have 6 docs";
 			if (await db[collectionName].copyTo(collectionName2) != 6) throw "should have copied all 6 docs";
@@ -1953,7 +1964,7 @@ describe("DB", function() {
 			it('should create a single-field index', async function() {
 				var indexName = await db[collectionName].createIndex({ age: 1 });
 				expect(indexName).to.equal('age_1');
-				var indexes = db[collectionName].getIndexes();
+				var indexes = await db[collectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 				expect(indexes[0].name).to.equal('age_1');
 				expect(indexes[0].key).to.deep.equal({ age: 1 });
@@ -1962,7 +1973,7 @@ describe("DB", function() {
 			it('should create a named index', async function() {
 				var indexName = await db[collectionName].createIndex({ legs: 1 }, { name: 'legs_index' });
 				expect(indexName).to.equal('legs_index');
-				var indexes = db[collectionName].getIndexes();
+				var indexes = await db[collectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 				expect(indexes[0].name).to.equal('legs_index');
 			});
@@ -1970,14 +1981,14 @@ describe("DB", function() {
 			it('should create multiple indexes', async function() {
 				await db[collectionName].createIndex({ age: 1 });
 				await db[collectionName].createIndex({ legs: -1 });
-				var indexes = db[collectionName].getIndexes();
+				var indexes = await db[collectionName].getIndexes();
 				expect(indexes.length).to.equal(2);
 			});
 
 			it('should not create duplicate index', async function() {
 				await db[collectionName].createIndex({ age: 1 });
 				await db[collectionName].createIndex({ age: 1 });
-				var indexes = db[collectionName].getIndexes();
+				var indexes = await db[collectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 			});
 
@@ -2070,7 +2081,7 @@ describe("DB", function() {
 				var indexName = await db[collectionName].createIndex({ age: 1, legs: 1 });
 				expect(indexName).to.equal('age_1_legs_1');
 				
-				var indexes = db[collectionName].getIndexes();
+				var indexes = await db[collectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 				expect(indexes[0].key).to.deep.equal({ age: 1, legs: 1 });
 			});
@@ -2148,7 +2159,7 @@ describe("DB", function() {
 				const indexName = await db[textCollectionName].createIndex({ description: 'text' });
 				expect(indexName).to.equal('description_text');
 
-				const indexes = db[textCollectionName].getIndexes();
+				const indexes = await db[textCollectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 				expect(indexes[0].name).to.equal('description_text');
 				expect(indexes[0].key).to.deep.equal({ description: 'text' });
@@ -2161,7 +2172,7 @@ describe("DB", function() {
 				);
 				expect(indexName).to.equal('title_search');
 
-				const indexes = db[textCollectionName].getIndexes();
+				const indexes = await db[textCollectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 				expect(indexes[0].name).to.equal('title_search');
 			});
@@ -2173,7 +2184,7 @@ describe("DB", function() {
 				});
 				expect(indexName).to.equal('title_text_description_text');
 
-				const indexes = db[textCollectionName].getIndexes();
+				const indexes = await db[textCollectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 				expect(indexes[0].key).to.deep.equal({ title: 'text', description: 'text' });
 			});
@@ -2252,14 +2263,14 @@ describe("DB", function() {
 			it('should drop a text index', async function() {
 				await db[textCollectionName].createIndex({ content: 'text' });
 				
-				let indexes = db[textCollectionName].getIndexes();
+				let indexes = await db[textCollectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 
 				// Drop the index
 				const result = await db[textCollectionName].dropIndex('content_text');
 				expect(result.ok).to.equal(1);
 
-				indexes = db[textCollectionName].getIndexes();
+				indexes = await db[textCollectionName].getIndexes();
 				expect(indexes.length).to.equal(0);
 			});
 
@@ -2268,14 +2279,14 @@ describe("DB", function() {
 				await db[textCollectionName].createIndex({ description: 'text' });
 				await db[textCollectionName].createIndex({ author: 1 }); // Regular index
 				
-				let indexes = db[textCollectionName].getIndexes();
+				let indexes = await db[textCollectionName].getIndexes();
 				expect(indexes.length).to.equal(3);
 
 				// Drop all indexes
 				const result = await db[textCollectionName].dropIndexes();
 				expect(result.ok).to.equal(1);
 
-				indexes = db[textCollectionName].getIndexes();
+				indexes = await db[textCollectionName].getIndexes();
 				expect(indexes.length).to.equal(0);
 			});
 
@@ -2380,7 +2391,7 @@ describe("DB", function() {
 				const indexName = await db[geoCollectionName].createIndex({ location: '2dsphere' });
 				expect(indexName).to.equal('location_2dsphere');
 
-				const indexes = db[geoCollectionName].getIndexes();
+				const indexes = await db[geoCollectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 				expect(indexes[0].name).to.equal('location_2dsphere');
 				expect(indexes[0].key).to.deep.equal({ location: '2dsphere' });
@@ -2393,7 +2404,7 @@ describe("DB", function() {
 				);
 				expect(indexName).to.equal('geo_index');
 
-				const indexes = db[geoCollectionName].getIndexes();
+				const indexes = await db[geoCollectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 				expect(indexes[0].name).to.equal('geo_index');
 			});
@@ -2504,14 +2515,14 @@ describe("DB", function() {
 			it('should drop a geospatial index', async function() {
 				await db[geoCollectionName].createIndex({ location: '2dsphere' });
 				
-				let indexes = db[geoCollectionName].getIndexes();
+				let indexes = await db[geoCollectionName].getIndexes();
 				expect(indexes.length).to.equal(1);
 
 				// Drop the index
 				const result = await db[geoCollectionName].dropIndex('location_2dsphere');
 				expect(result.ok).to.equal(1);
 
-				indexes = db[geoCollectionName].getIndexes();
+				indexes = await db[geoCollectionName].getIndexes();
 				expect(indexes.length).to.equal(0);
 			});
 

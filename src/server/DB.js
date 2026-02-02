@@ -122,8 +122,42 @@ export class DB {
   }
 
   getCollectionInfos() { throw new NotImplementedError('getCollectionInfos', { database: this.dbName }); }
-  getCollectionNames() {
-    return Array.from(this.collections.keys());
+  async getCollectionNames() {
+    // Discover collections from persistent storage (OPFS)
+    const discoveredNames = new Set();
+    
+    // First, check if OPFS is available
+    if (globalThis.navigator?.storage?.getDirectory) {
+      try {
+        // Navigate to the database folder
+        const parts = this.dbFolder.split('/').filter(Boolean);
+        let dirHandle = await globalThis.navigator.storage.getDirectory();
+        
+        for (const part of parts) {
+          dirHandle = await dirHandle.getDirectoryHandle(part, { create: false });
+        }
+        
+        // Enumerate collection directories
+        for await (const [name, handle] of dirHandle.entries()) {
+          if (handle.kind === 'directory') {
+            discoveredNames.add(name);
+          }
+        }
+      } catch (err) {
+        // If database folder doesn't exist yet, that's okay - no collections
+        if (err?.name !== 'NotFoundError' && err?.code !== 'ENOENT') {
+          // Log unexpected errors but don't fail
+          console.warn(`Error discovering collections in ${this.dbFolder}:`, err);
+        }
+      }
+    }
+    
+    // Merge with in-memory collections (in case some were just created)
+    for (const name of this.collections.keys()) {
+      discoveredNames.add(name);
+    }
+    
+    return Array.from(discoveredNames);
   }
 	getLastError() { throw new NotImplementedError('getLastError', { database: this.dbName }); }
 	getLastErrorObj() { throw new NotImplementedError('getLastErrorObj', { database: this.dbName }); }

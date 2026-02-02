@@ -1,10 +1,10 @@
 {
   "name": "babymongo",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "MongoDB API compliant database that runs in the browser and Node.js using OPFS for storage.",
   "main": "dist/babymongo-node.min.js",
   "scripts": {
-    "test": "mocha --reporter spec test/test.js test/test-advanced-indexes.js test/test-index-verification.js test/test-objectid.js test/test-aggregation-expressions.js test/test-aggregation-stages.js test/test-dot-notation.js test/test-change-streams.js test/test-queryoperators.js test/test-errors.js test/test-cursor-methods.js test/test-arrayfilters.js test/test-positional-operator.js test/test-geospatial-collection-index.js test/test-find-simple.js test/test-metadata-size.js test/test-opfs-storage.js",
+    "test": "mocha --reporter spec test/test.js test/test-advanced-indexes.js test/test-index-verification.js test/test-objectid.js test/test-aggregation-expressions.js test/test-aggregation-stages.js test/test-dot-notation.js test/test-change-streams.js test/test-queryoperators.js test/test-errors.js test/test-cursor-methods.js test/test-arrayfilters.js test/test-positional-operator.js test/test-geospatial-collection-index.js test/test-find-simple.js test/test-metadata-size.js test/test-opfs-storage.js test/test-collection-persistence.js",
     "test:browser": "mocha --reporter spec test/test-browser.js",
     "test:comparison": "mocha --reporter spec test/test-mongodb-comparison.js",
     "test:all": "npm test && npm run test:browser",

@@ -1142,7 +1142,7 @@ export class Collection extends EventEmitter {
         }
 
         // Check if collection exists without triggering auto-creation
-        const collectionNames = this.db.getCollectionNames();
+        const collectionNames = await this.db.getCollectionNames();
         if (!collectionNames.includes(stageSpec.from)) {
           throw new QueryError('$lookup: collection not found: ' + stageSpec.from, {
             collection: this.name,
@@ -1180,7 +1180,7 @@ export class Collection extends EventEmitter {
         }
 
         // Check if collection exists without triggering auto-creation
-        const collectionNames = this.db.getCollectionNames();
+        const collectionNames = await this.db.getCollectionNames();
         if (!collectionNames.includes(stageSpec.from)) {
           throw new QueryError('$graphLookup: collection not found: ' + stageSpec.from, {
             collection: this.name,

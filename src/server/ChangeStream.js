@@ -16,8 +16,10 @@ export class ChangeStream extends EventEmitter {
 		this._listeners = new Map();
 		this._changeCounter = 0;
 		
-		// Start watching immediately (synchronously)
-		this._startWatching();
+		// Start watching immediately (asynchronously but don't await)
+		this._startWatching().catch(err => {
+			console.error('Error starting change stream watch:', err);
+		});
 	}
 
 	/**
@@ -55,10 +57,10 @@ export class ChangeStream extends EventEmitter {
 	 * Start watching for changes
 	 * @private
 	 */
-	_startWatching() {
+	async _startWatching() {
 		if (this.closed) return;
 		
-		const collections = this._getCollectionsToWatch();
+		const collections = await this._getCollectionsToWatch();
 		
 		for (const collection of collections) {
 			this._watchCollection(collection);
@@ -84,14 +86,14 @@ export class ChangeStream extends EventEmitter {
 	 * Get collections to watch based on target type
 	 * @private
 	 */
-	_getCollectionsToWatch() {
+	async _getCollectionsToWatch() {
 		const collections = [];
 		
 		// Server - watch all collections in all databases
 		if (this._isServer(this.target)) {
 			// Watch all existing databases
 			for (const [dbName, db] of this.target.databases) {
-				const collectionNames = db.getCollectionNames();
+				const collectionNames = await db.getCollectionNames();
 				for (const name of collectionNames) {
 					const collection = db[name];
 					if (collection && collection.isCollection) {
@@ -111,7 +113,7 @@ export class ChangeStream extends EventEmitter {
 		
 		// DB - watch all collections in the database
 		if (this._isDB(this.target)) {
-			const collectionNames = this.target.getCollectionNames();
+			const collectionNames = await this.target.getCollectionNames();
 			for (const name of collectionNames) {
 				const collection = this.target[name];
 				if (collection && collection.isCollection) {
@@ -289,14 +291,17 @@ export class ChangeStream extends EventEmitter {
 			if (!self._watchedDBs.has(dbName)) {
 				self._watchedDBs.set(dbName, database);
 				
-				// Watch existing collections in this database
-				const collectionNames = database.getCollectionNames();
-				for (const colName of collectionNames) {
-					const col = database[colName];
-					if (col && col.isCollection && !self._listeners.has(col)) {
-						self._watchCollection(col);
+				// Watch existing collections in this database (async)
+				database.getCollectionNames().then(collectionNames => {
+					for (const colName of collectionNames) {
+						const col = database[colName];
+						if (col && col.isCollection && !self._listeners.has(col)) {
+							self._watchCollection(col);
+						}
 					}
-				}
+				}).catch(err => {
+					console.warn('Error discovering collections for watch:', err);
+				});
 				
 				// Intercept new collection creation on this database
 				self._interceptDBCollectionCreationForClient(database);
@@ -329,14 +334,17 @@ export class ChangeStream extends EventEmitter {
 			if (!self._watchedDBs.has(dbName)) {
 				self._watchedDBs.set(dbName, db);
 				
-				// Watch existing collections in this database
-				const collectionNames = db.getCollectionNames();
-				for (const colName of collectionNames) {
-					const col = db[colName];
-					if (col && col.isCollection && !self._listeners.has(col)) {
-						self._watchCollection(col);
+				// Watch existing collections in this database (async)
+				db.getCollectionNames().then(collectionNames => {
+					for (const colName of collectionNames) {
+						const col = db[colName];
+						if (col && col.isCollection && !self._listeners.has(col)) {
+							self._watchCollection(col);
+						}
 					}
-				}
+				}).catch(err => {
+					console.warn('Error discovering collections for watch:', err);
+				});
 				
 				// Intercept new collection creation on this database
 				self._interceptDBCollectionCreationForServer(db);
