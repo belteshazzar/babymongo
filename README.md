@@ -448,6 +448,38 @@ await db.products.createIndex({ name: 1 });
 // .opfs/babymongo/store/products/name_1.bj
 ```
 
+### Performance Tuning
+
+BabyMongo uses B+ trees for document storage and indexes. The **branching factor** (tree order) significantly impacts performance based on your document size and workload.
+
+**Configure branching factor per collection:**
+
+```javascript
+const db = client.db('myapp');
+
+// For small documents (< 200 bytes) - use default order 50
+const events = db.collection('events');
+
+// For large documents (> 2KB) - use lower order (10-20)
+const articles = db.collection('articles', { bPlusTreeOrder: 15 });
+```
+
+**Recommendations based on document size:**
+
+| Document Size | Recommended Order | Rationale |
+|---------------|-------------------|-----------|
+| < 200 bytes   | 50 (default)      | Balanced performance across operations |
+| 200B - 2KB    | 20-50             | Prevents search degradation |
+| > 2KB         | 10-20             | Critical to avoid severe slowdown (13x) |
+
+**Workload considerations:**
+
+- **Write-heavy workloads:** Lower orders (10-20) for faster inserts
+- **Read-heavy workloads:** Medium orders (20-50) for balanced search/insert
+- **Range-query heavy:** Higher orders (200) for small docs, lower (10-20) for large docs
+
+⚠️ **Warning:** Using high branching factors (200+) with large documents causes catastrophic search performance degradation. See [BPLUSTREE_PERFORMANCE_REPORT.md](BPLUSTREE_PERFORMANCE_REPORT.md) for detailed benchmark results.
+
 ### Multiple Clients Sharing a Worker
 
 You can create multiple clients that share the same worker:
